@@ -1,0 +1,20 @@
+<section class="dash-hero">
+  <div class="dash-hero-brand">
+    <span class="brand light" style="pointer-events:none">
+      <span class="brand-logo"><img src="{{ url_for('static', filename='img/logo.svg') }}" alt=""></span>
+      <span class="brand-text"><b>{{ t('app_name') }}</b><small>{{ 'Kashef' if lang == 'ar' else 'كاشف' }}</small></span>
+    </span>
+    <p>{{ t('dash_brand_tag') }}</p>
+    <a class="btn-pill-cta" href="{{ url_for('upload') }}">
+      {{ t('start_new_scan') }} <span class="cta-ic"><i class="bi bi-camera"></i></span>
+    </a>
+  </div>
+
+  <div class="dash-hero-art">
+    <img src="{{ url_for('static', filename='img/dash-bottle.webp') }}" alt="" width="432" height="302">
+    <div class="dash-hero-copy">
+      <h2>{{ t('dash_hero_h1') }}<br>{{ t('dash_hero_h2') }}</h2>
+      <p>{{ t('dash_hero_p') }}</p>
+    </div>
+  </div>
+</section>

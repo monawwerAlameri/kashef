@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block title %}{{ t('feedback_title') }}{% endblock %}
+{% block heading %}{{ t('feedback_title') }}{% endblock %}
+
+{% block content %}
+<div class="mx-auto" style="max-width: 720px;">
+  <form method="post" class="panel">
+    <div class="panel-head">
+      <h3><i class="bi bi-chat-dots-fill text-primary"></i> {{ t('feedback_title') }}</h3>
+    </div>
+    <p class="muted small">{{ t('feedback_sub') }}</p>
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label small fw-bold">{{ t('name') }}</label>
+        <input type="text" name="name" class="form-control kf-input" value="{{ user.name if user else '' }}" required>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label small fw-bold">{{ t('email') }}</label>
+        <input type="email" name="email" class="form-control kf-input" value="{{ user.email if user else '' }}" required>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label small fw-bold">{{ t('feedback_category') }}</label>
+        <select name="category" class="form-select kf-input">
+          <option value="ocr_issue">{{ t('cat_ocr') }}</option>
+          <option value="inaccurate_data">{{ t('cat_data') }}</option>
+          <option value="suggestion">{{ t('cat_suggestion') }}</option>
+          <option value="general">{{ t('cat_general') }}</option>
+        </select>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label small fw-bold">{{ t('message') }}</label>
+        <textarea name="message" rows="5" class="form-control kf-input" placeholder="اكتب ملاحظاتك وتفاصيل العبوة بالتفصيل…" required></textarea>
+      </div>
+
+      <div class="col-12 mt-3">
+        <button type="submit" class="btn btn-kf w-100">
+          <i class="bi bi-send-fill me-1"></i> {{ t('send_feedback') }}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block public %}
+<div class="mx-auto" style="max-width: 720px;">
+  <form method="post" class="panel">
+    <div class="panel-head">
+      <h3><i class="bi bi-chat-dots-fill text-primary"></i> {{ t('feedback_title') }}</h3>
+    </div>
+    <p class="muted small">{{ t('feedback_sub') }}</p>
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label small fw-bold">{{ t('name') }}</label>
+        <input type="text" name="name" class="form-control kf-input" placeholder="{{ t('name') }}" required>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label small fw-bold">{{ t('email') }}</label>
+        <input type="email" name="email" class="form-control kf-input" placeholder="name@example.com" required>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label small fw-bold">{{ t('feedback_category') }}</label>
+        <select name="category" class="form-select kf-input">
+          <option value="ocr_issue">{{ t('cat_ocr') }}</option>
+          <option value="inaccurate_data">{{ t('cat_data') }}</option>
+          <option value="suggestion">{{ t('cat_suggestion') }}</option>
+          <option value="general">{{ t('cat_general') }}</option>
+        </select>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label small fw-bold">{{ t('message') }}</label>
+        <textarea name="message" rows="5" class="form-control kf-input" placeholder="اكتب ملاحظاتك بالتفصيل…" required></textarea>
+      </div>
+
+      <div class="col-12 mt-3">
+        <button type="submit" class="btn btn-kf w-100">
+          <i class="bi bi-send-fill me-1"></i> {{ t('send_feedback') }}
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+{% endblock %}

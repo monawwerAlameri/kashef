@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% set force_public = true %}
+{% block title %}{{ t('nav_terms') }}{% endblock %}
+
+{% block public %}
+<div class="mx-auto" style="max-width: 820px;">
+  <div class="panel">
+    <div class="panel-head">
+      <h3><i class="bi bi-file-earmark-medical text-primary"></i> {{ t('nav_terms') }}</h3>
+    </div>
+
+    <div class="disclaimer my-3">
+      <i class="bi bi-shield-exclamation text-danger"></i>
+      <div><strong>تنبيه طبي جوهري:</strong> {{ t('disclaimer') }}</div>
+    </div>
+
+    <div class="small lh-lg text-secondary">
+      <h5 class="fw-bold text-dark mt-3">1. طبيعة الخدمة والغاية منها</h5>
+      <p>
+        نظام «كاشف» هو مساعد رقمي ذكي يهدف إلى تسهيل قراءة النصوص المطبوعة على عبوات الأدوية ونشراتها وتبسيطها للمرضى ومقدمي الرعاية وكبار السن، وخاصة عندما يكون الخط صغيراً أو المصطلحات غير واضحة.
+      </p>
+
+      <h5 class="fw-bold text-dark mt-3">2. عدم الحلول محل الاستشارة الطبية</h5>
+      <p>
+        المعلومات المعروضة في النظام مستخرجة آلياً من صورة العبوة المرفوعة ولا تشكل تشخيصاً طبياً أو وصفة علاجية أو توصية ببدء أو وقف أي دواء. يجب دائماً اتباع تعليمات الطبيب المعالج واستشارة الصيدلي المرخص عند وجود أي شك أو تعارض.
+      </p>
+
+      <h5 class="fw-bold text-dark mt-3">3. مسؤولية الاستخدام</h5>
+      <p>
+        يتحمل المستخدم مسؤولية التحقق من النص المقروء ومطابقته للعبوة الأصلية، ويتيح النظام شاشة واضحة لمراجعة النص الأصلي وتعديله قبل التحليل لضمان أعلى درجات الدقة.
+      </p>
+    </div>
+
+    <div class="mt-4 pt-3 border-top text-center">
+      <a href="{{ url_for('index') }}" class="btn btn-kf-soft btn-sm"><i class="bi bi-arrow-right"></i> {{ t('nav_main') }}</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

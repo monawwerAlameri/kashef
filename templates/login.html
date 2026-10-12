@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}{{ t('login') }}{% endblock %}
+
+{% block public %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <a class="brand light" href="{{ url_for('index') }}">
+      <span class="brand-logo"><img src="{{ url_for('static', filename='img/logo.svg') }}" alt=""></span>
+      <div class="brand-text"><b>{{ t('app_name') }}</b><small>{{ 'Kashef' if lang == 'ar' else 'كاشف' }}</small></div>
+    </a>
+    <h2>{{ t('login_title') }}</h2>
+    <p class="sub">{{ t('login_sub') }}</p>
+
+    <form method="post" class="vstack gap-3">
+      <div>
+        <label class="form-label small" for="loginEmail">{{ t('email') }}</label>
+        <div class="field">
+          <span class="field-ic"><i class="bi bi-envelope"></i></span>
+          <input type="email" name="email" id="loginEmail" class="form-control kf-input" placeholder="name@example.com" autocomplete="email" dir="ltr" required autofocus>
+        </div>
+      </div>
+
+      <div>
+        <label class="form-label small" for="loginPw">{{ t('password') }}</label>
+        <div class="field">
+          <span class="field-ic"><i class="bi bi-lock"></i></span>
+          <input type="password" name="password" id="loginPw" class="form-control kf-input" autocomplete="current-password" dir="ltr" required>
+          <button class="field-toggle" type="button" id="togglePwBtn" aria-label="{{ t('toggle_pw') }}"><i class="bi bi-eye"></i></button>
+        </div>
+        <a href="{{ url_for('forgot_password') }}" class="small d-inline-block mt-2 fw-bold">{{ t('forgot_pw') }}</a>
+      </div>
+
+      <button type="submit" class="btn-auth">
+        <span>{{ t('login') }}</span> <i class="bi bi-box-arrow-in-right"></i>
+      </button>
+    </form>
+
+    <div class="or-sep"><span>{{ t('or') }}</span></div>
+
+    <a class="btn-auth outline" href="{{ url_for('register') }}">
+      <span>{{ t('register') }}</span> <i class="bi bi-person-plus"></i>
+    </a>
+
+    <div class="support-box">
+      <i class="bi bi-shield-check"></i> {{ t('support_line') }}
+      <small>support@kashef.com</small>
+    </div>
+
+    <details class="demo-box">
+      <summary>{{ t('demo_accounts') }}</summary>
+      <div>
+        <code>admin@kashef.com</code> / <code>Admin@123</code><br>
+        <code>pharmacist@kashef.com</code> / <code>Pharma@123</code><br>
+        <code>user@kashef.com</code> / <code>User@123</code>
+      </div>
+    </details>
+  </div>
+  <div class="auth-visual" aria-hidden="false">
+    <img src="{{ url_for('static', filename='img/login-laptop.webp') }}" alt="" width="830" height="518">
+    <span class="kicker">{{ t('tagline') }}</span>
+    <h2>{{ t('auth_h_1') }} <span class="grad">{{ t('auth_h_2') }}</span></h2>
+    <span class="rule"></span>
+    <p>{{ t('hero_sub') }}</p>
+  </div>
+
+</div>
+
+<div class="auth-trust">
+  <span><i class="bi bi-shield-check"></i> {{ t('trust_secure') }}</span>
+  <span><i class="bi bi-cpu"></i> {{ t('trust_tech') }}</span>
+  <span><i class="bi bi-bullseye"></i> {{ t('trust_accuracy') }}</span>
+  <span><i class="bi bi-headset"></i> {{ t('trust_support') }}</span>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const toggleBtn = document.getElementById('togglePwBtn');
+  const pwInput = document.getElementById('loginPw');
+  if (toggleBtn && pwInput) {
+    toggleBtn.addEventListener('click', () => {
+      const isPw = pwInput.type === 'password';
+      pwInput.type = isPw ? 'text' : 'password';
+      toggleBtn.innerHTML = isPw ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
+    });
+  }
+</script>
+{% endblock %}

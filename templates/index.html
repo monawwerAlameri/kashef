@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% set force_public = true %}
+{% block title %}{{ t('hero_title') }}{% endblock %}
+
+{% block public %}
+{% set go = url_for('upload' if user else 'login') %}
+
+<section class="landing-hero">
+  <div class="hero-copy">
+    <span class="tag-pill"><i class="bi bi-stars"></i> {{ t('tagline') }}</span>
+
+    <h1 class="hero-h1">
+      {{ t('hero_l1') }}
+      <span class="grad">{{ t('hero_l2') }}</span>
+    </h1>
+    <p class="lead">{{ t('hero_sub') }}</p>
+
+    <div class="hero-cta">
+      <a class="btn-hero" href="{{ go }}">
+        {{ t('start_now') }} <span class="cta-ic"><i class="bi bi-arrow-right"></i></span>
+      </a>
+      <a class="btn-hero ghost" href="{{ url_for('help_page') }}">
+        {{ t('watch_guide') }} <span class="cta-ic"><i class="bi bi-play-circle"></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="hero-visual" aria-hidden="true">
+    <img src="{{ url_for('static', filename='img/hero-laptop.webp') }}" alt="" width="985" height="495" fetchpriority="high">
+  </div>
+</section>
+
+<section class="feature-grid" id="features">
+  <a class="feat-card t-blue" href="{{ go }}">
+    <div class="feat-top">
+      <span class="feat-ic"><i class="bi bi-camera"></i></span>
+      <h3>{{ t('step1_t') }}</h3>
+    </div>
+    <p>{{ t('step1_d') }}</p>
+    <span class="feat-go"><i class="bi bi-arrow-right"></i></span>
+  </a>
+
+  <a class="feat-card t-violet" href="{{ go }}">
+    <div class="feat-top">
+      <span class="feat-ic"><i class="bi bi-file-earmark-text"></i></span>
+      <h3>{{ t('step2_t') }}</h3>
+    </div>
+    <p>{{ t('step2_d') }}</p>
+    <span class="feat-go"><i class="bi bi-arrow-right"></i></span>
+  </a>
+
+  <a class="feat-card t-pink" href="{{ go }}">
+    <div class="feat-top">
+      <span class="feat-ic"><i class="bi bi-cpu"></i></span>
+      <h3>{{ t('step3_t') }}</h3>
+    </div>
+    <p>{{ t('step3_d') }}</p>
+    <span class="feat-go"><i class="bi bi-arrow-right"></i></span>
+  </a>
+
+  <a class="feat-card t-mint" href="{{ url_for('help_page') }}">
+    <div class="feat-top">
+      <span class="feat-ic"><i class="bi bi-check2-circle"></i></span>
+      <h3>{{ t('step4_t') }}</h3>
+    </div>
+    <p>{{ t('step4_d') }}</p>
+    <span class="feat-go"><i class="bi bi-arrow-right"></i></span>
+  </a>
+
+  <a class="feat-card t-indigo" href="{{ url_for('privacy') }}">
+    <div class="feat-top">
+      <span class="feat-ic"><i class="bi bi-shield-lock"></i></span>
+      <h3>{{ t('feat5_t') }}</h3>
+    </div>
+    <p>{{ t('feat5_d') }}</p>
+    <span class="feat-go"><i class="bi bi-arrow-right"></i></span>
+  </a>
+</section>
+
+<a class="scroll-hint" href="#notice">
+  <i class="bi bi-mouse sh-mouse"></i>
+  <span class="sh-row"><span>{{ t('discover_more') }}</span></span>
+</a>
+
+<section class="landing-notice" id="notice">
+  <div class="disclaimer">
+    <i class="bi bi-shield-exclamation text-warning"></i>
+    <div>{{ t('disclaimer') }}</div>
+  </div>
+  {% if not user %}
+  <div class="d-flex justify-content-center gap-2 flex-wrap mt-3">
+    <a class="btn btn-kf-outline" href="{{ url_for('register') }}"><i class="bi bi-person-plus me-1"></i> {{ t('register') }}</a>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

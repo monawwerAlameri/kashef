@@ -1,0 +1,26 @@
+<div class="row g-3 mb-3">
+  <div class="col-lg-4 order-2 order-lg-1">
+    <div class="panel safety-card h-100">
+      <div>
+        <h3>{{ t('safety_t') }}</h3>
+        <p>{{ t('safety_d') }}</p>
+        <a class="btn btn-kf btn-sm" href="{{ url_for('terms') }}">{{ t('more_info') }} <i class="bi bi-arrow-right"></i></a>
+      </div>
+      <img src="{{ url_for('static', filename='img/pill-leaf.webp') }}" alt="" width="170" height="140">
+    </div>
+  </div>
+  <div class="col-lg-8 order-1 order-lg-2">
+    <div class="panel h-100">
+      <div class="panel-head mb-2"><h3 style="font-size:1rem">{{ t('how_title') }}</h3></div>
+      <div class="how">
+        <img class="how-shield" src="{{ url_for('static', filename='img/shield.webp') }}" alt="" width="170" height="150">
+        <div class="how-steps">
+          <div class="how-step"><span class="hs-ic"><i class="bi bi-camera"></i></span><b>{{ t('step1_t') }}</b><small>{{ t('step1_d') }}</small></div>
+          <div class="how-step"><span class="hs-ic"><i class="bi bi-upc-scan"></i></span><b>{{ t('step2_t') }}</b><small>{{ t('step2_d') }}</small></div>
+          <div class="how-step"><span class="hs-ic"><i class="bi bi-cpu"></i></span><b>{{ t('step3_t') }}</b><small>{{ t('step3_d') }}</small></div>
+          <div class="how-step"><span class="hs-ic"><i class="bi bi-file-earmark-check"></i></span><b>{{ t('step4_t') }}</b><small>{{ t('step4_d') }}</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

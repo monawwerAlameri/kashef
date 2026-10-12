@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% block title %}{{ t('result_title') }}{% endblock %}
+{% block heading %}{{ t('result_title') }}{% endblock %}
+
+{% block content %}
+{% macro info_card(tone, icon, title, items, badge_text=None) %}
+<div class="res-box {{ tone }}">
+  <div class="res-ic"><i class="bi bi-{{ icon }}"></i></div>
+  <div class="flex-grow-1">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+      <h4>{{ title }}</h4>
+      {% if badge_text %}
+        <span class="badge-kf {{ tone }} small">{{ badge_text }}</span>
+      {% endif %}
+    </div>
+    {% if items %}
+      <ul>
+        {% for item in items %}
+          <li dir="auto">{{ item }}</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="muted mb-0 small"><i class="bi bi-dash-circle"></i> {{ t('not_detected') }}</p>
+    {% endif %}
+  </div>
+</div>
+{% endmacro %}
+
+<div class="mx-auto" style="max-width: 860px;">
+  <!-- Header Card: Medicine Title & Completeness -->
+  <div class="panel mb-3">
+    <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+      <div>
+        <span class="badge-kf user mb-1"><i class="bi bi-calendar-check"></i> {{ h.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+        {% if h.status == 'pharmacist_verified' %}
+          <span class="badge-kf ok"><i class="bi bi-patch-check-fill"></i> {{ t('pharma_badge_verified') }}</span>
+        {% elif h.status == 'needs_review' %}
+          <span class="badge-kf warn"><i class="bi bi-hourglass-split"></i> {{ t('pending_reviews') }}</span>
+        {% endif %}
+        
+        <h2 class="mb-1 text-primary-950 mt-1" dir="auto">{{ r.name or t('not_detected') }}</h2>
+        
+        {% if r.active_ingredient or r.strength %}
+        <p class="muted mb-0 small">
+          <i class="bi bi-droplet-half text-cyan"></i> <strong>{{ t('active_substance') }}:</strong> 
+          {{ r.active_ingredient or '' }} {{ r.strength or '' }}
+        </p>
+        {% endif %}
+      </div>
+
+      <div class="text-end-logical">
+        <span class="small text-muted d-block mb-1">{{ t('completeness') }}: <strong>{{ r.completeness or 75 }}%</strong></span>
+        <div class="progress" style="width: 140px; height: 8px;">
+          <div class="progress-bar bg-success" role="progressbar" style="width: {{ r.completeness or 75 }}%;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pharmacist Clinical Verification Alert if exists -->
+  {% if h.pharmacist_notes %}
+  <div class="res-box green mb-3">
+    <div class="res-ic"><i class="bi bi-patch-check-fill"></i></div>
+    <div>
+      <h4><i class="bi bi-chat-quote-fill"></i> {{ t('pharma_notes') }} ({{ h.reviewer.name if h.reviewer else 'الصيدلي' }}):</h4>
+      <p class="mb-0 small" dir="auto">{{ h.pharmacist_notes }}</p>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Dosage & Administration -->
+  {% set dosage_items = [] %}
+  {% if r.dosage_amount %}{% set _ = dosage_items.append(t('amount') ~ ': ' ~ r.dosage_amount) %}{% endif %}
+  {% if r.timing %}{% set _ = dosage_items.append(t('timing') ~ ': ' ~ r.timing) %}{% endif %}
+  {% for dl in r.dosage_lines %}{% set _ = dosage_items.append(dl) %}{% endif %}
+  {{ info_card('green', 'clock-fill', t('dosage'), dosage_items) }}
+
+  <!-- Purpose / Indications -->
+  {{ info_card('blue', 'info-circle-fill', t('purpose'), [r.purpose] if r.purpose else []) }}
+
+  <!-- Critical Warnings -->
+  {{ info_card('red', 'exclamation-octagon-fill', t('warnings'), r.warnings) }}
+
+  <!-- Precautions & Contraindications -->
+  {{ info_card('amber', 'shield-exclamation', t('precautions'), r.precautions) }}
+
+  <!-- Side Effects -->
+  {{ info_card('pink', 'bandaid-fill', t('side_effects'), r.side_effects) }}
+
+  <!-- Storage Instructions -->
+  {{ info_card('violet', 'box-seam-fill', t('storage'), r.storage) }}
+
+  <!-- Additional Leaflet Instructions -->
+  {% if r.instructions %}
+  {{ info_card('blue', 'card-text', t('instructions'), r.instructions) }}
+  {% endif %}
+
+  <!-- Medical Safety Disclaimer Banner -->
+  <div class="disclaimer">
+    <i class="bi bi-shield-fill-exclamation text-danger"></i>
+    <div>{{ t('disclaimer') }}</div>
+  </div>
+
+  <!-- Actions Bar -->
+  <div class="d-flex flex-wrap gap-2 mt-3 pt-2">
+    <a class="btn btn-kf" href="{{ url_for('upload') }}">
+      <i class="bi bi-camera-fill me-1"></i> {{ t('scan_another') }}
+    </a>
+    
+    <a class="btn btn-outline-secondary" href="{{ url_for('extracted', hid=h.id) }}">
+      <i class="bi bi-file-text me-1"></i> مراجعة النص الأصلي
+    </a>
+
+    <button class="btn btn-kf-outline" onclick="window.print()">
+      <i class="bi bi-printer me-1"></i> {{ t('print') }}
+    </button>
+
+    {% if h.status != 'needs_review' and h.status != 'pharmacist_verified' %}
+    <form method="post" action="{{ url_for('request_review', hid=h.id) }}" class="d-inline">
+      <button class="btn btn-outline-primary" type="submit">
+        <i class="bi bi-person-check me-1"></i> {{ t('request_pharma_review') }}
+      </button>
+    </form>
+    {% endif %}
+
+    <a class="btn btn-light ms-auto" href="{{ url_for('history') }}">
+      <i class="bi bi-arrow-return-right me-1"></i> {{ t('view_history') }}
+    </a>
+  </div>
+</div>
+{% endblock %}

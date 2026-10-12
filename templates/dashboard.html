@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}{{ t('nav_dashboard') }}{% endblock %}
+{% block heading %}{{ t('nav_dashboard') }}{% endblock %}
+
+{% block content %}
+<div class="dash-grid">
+  <div class="panel overview">
+    <h3>{{ t('dash_sub') }}</h3>
+    <div class="overview-grid">
+      <div class="mini-stat mint">
+        <span class="ms-ic"><i class="bi bi-clipboard2-pulse"></i></span>
+        <b>{{ total }}</b><span>{{ t('stat_scans') }}</span>
+      </div>
+      <div class="mini-stat rose">
+        <span class="ms-ic"><i class="bi bi-calendar-week"></i></span>
+        <b>{{ week }}</b><span>{{ t('stat_week') }}</span>
+      </div>
+      <div class="mini-stat violet">
+        <span class="ms-ic"><i class="bi bi-capsule"></i></span>
+        <b>{{ meds }}</b><span>{{ t('stat_meds') }}</span>
+      </div>
+      <div class="mini-stat blue">
+        <span class="ms-ic"><i class="bi bi-clock"></i></span>
+        <b>{{ last.created_at.strftime('%d/%m') if last else '—' }}</b><span>{{ t('stat_last') }}</span>
+      </div>
+    </div>
+  </div>
+
+  {% include '_dash_hero.html' %}
+</div>
+
+<div class="q-grid">
+  <a class="q-card violet" href="{{ url_for('history') }}">
+    <span class="q-ic"><i class="bi bi-journal-medical"></i></span>
+    <span class="q-body"><span class="q-title">{{ t('nav_history') }}</span><span class="q-num">{{ total }}</span><span class="q-more">{{ t('view') }} <i class="bi bi-arrow-right"></i></span></span>
+  </a>
+  <a class="q-card peach" href="{{ url_for('history') }}">
+    <span class="q-ic"><i class="bi bi-capsule"></i></span>
+    <span class="q-body"><span class="q-title">{{ t('stat_meds') }}</span><span class="q-num">{{ meds }}</span><span class="q-more">{{ t('view') }} <i class="bi bi-arrow-right"></i></span></span>
+  </a>
+  <a class="q-card mint" href="{{ url_for('history') }}">
+    <span class="q-ic"><i class="bi bi-calendar-week"></i></span>
+    <span class="q-body"><span class="q-title">{{ t('stat_week') }}</span><span class="q-num">{{ week }}</span><span class="q-more">{{ t('view') }} <i class="bi bi-arrow-right"></i></span></span>
+  </a>
+  <a class="q-card blue" href="{{ url_for('upload') }}">
+    <span class="q-ic"><i class="bi bi-camera"></i></span>
+    <span class="q-body"><span class="q-title">{{ t('nav_scan') }}</span><span class="q-num"><i class="bi bi-plus-lg"></i></span><span class="q-more">{{ t('scan_now') }} <i class="bi bi-arrow-right"></i></span></span>
+  </a>
+</div>
+
+<div class="panel">
+  <div class="panel-head">
+    <h3><i class="bi bi-file-earmark-medical"></i> {{ t('recent_scans') }}</h3>
+    <a class="panel-link" href="{{ url_for('history') }}">{{ t('view_history') }} <i class="bi bi-arrow-right"></i></a>
+  </div>
+  {% with items=recent, show_user=False %}
+    {% include '_recent.html' %}
+  {% endwith %}
+</div>
+
+{% include '_how_safety.html' %}
+{% endblock %}

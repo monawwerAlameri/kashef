@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}{{ t('extracted') }}{% endblock %}
+{% block heading %}{{ t('extracted') }}{% endblock %}
+
+{% block content %}
+<form method="post" action="{{ url_for('analyze', hid=h.id) }}" class="panel mx-auto" style="max-width: 840px;" id="analyzeForm">
+  <div class="panel-head">
+    <h3><i class="bi bi-file-earmark-text-fill text-primary"></i> {{ t('extracted') }}</h3>
+    <div class="d-flex gap-2">
+      <button type="button" class="btn btn-kf-soft btn-sm" id="copyBtn">
+        <i class="bi bi-clipboard"></i> {{ t('copy') }}
+      </button>
+      <a href="{{ url_for('upload') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-repeat"></i> {{ t('reupload') }}
+      </a>
+    </div>
+  </div>
+
+  <p class="muted small">{{ t('extracted_hint') }}</p>
+
+  <div class="mb-2 d-flex align-items-center gap-2">
+    <span class="badge-kf user"><i class="bi bi-translate"></i> {{ h.detected_lang or 'ara+eng' }}</span>
+    <span class="small text-muted">يمكنك تعديل أي كلمة أدناه لضمان دقة التحليل السريري:</span>
+  </div>
+
+  <textarea name="text" id="ocrText" rows="11" class="form-control kf-input ocr-text" dir="auto" required>{{ h.extracted_text }}</textarea>
+
+  <div class="d-flex gap-2 mt-3">
+    <button type="submit" class="btn btn-kf flex-grow-1" id="analyzeBtn">
+      <i class="bi bi-cpu-fill me-1"></i> {{ t('analyze') }}
+    </button>
+  </div>
+</form>
+
+<div class="loading d-none" id="loading">
+  <div class="spinner-border text-info" role="status"></div>
+  <p class="mb-0">جارٍ تحليل وتصنيف البيانات الدوائية والتحذيرات…</p>
+</div>
+{% endblock %}

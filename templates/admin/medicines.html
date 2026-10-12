@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+{% block title %}{{ t('medicines') }}{% endblock %}
+{% block heading %}{{ t('medicines') }}{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  <!-- Add New Medicine Form -->
+  <div class="col-xl-4">
+    <form method="post" class="panel vstack gap-2">
+      <h3 class="mb-2"><i class="bi bi-plus-circle text-primary"></i> {{ t('add_medicine') }}</h3>
+      
+      <div>
+        <label class="form-label small fw-bold">{{ t('medicine_name') }}</label>
+        <input name="name" class="form-control kf-input" placeholder="مثال: Paracetamol 500 mg" required>
+      </div>
+
+      <div>
+        <label class="form-label small fw-bold">الاسم العلمي / المادة الفعالة</label>
+        <input name="generic_name" class="form-control kf-input" placeholder="مثال: Paracetamol">
+      </div>
+
+      <div>
+        <label class="form-label small fw-bold">{{ t('category') }}</label>
+        <input name="category" class="form-control kf-input" placeholder="مسكن ومضاد للحرارة">
+      </div>
+
+      <div>
+        <label class="form-label small fw-bold">{{ t('description') }}</label>
+        <textarea name="description" rows="2" class="form-control kf-input" placeholder="دواعي الاستعمال المعتمدة…"></textarea>
+      </div>
+
+      <div class="row g-2">
+        <div class="col-6">
+          <label class="form-label small fw-bold">{{ t('amount') }}</label>
+          <input name="amount" class="form-control kf-input" placeholder="1-2 قرص">
+        </div>
+        <div class="col-6">
+          <label class="form-label small fw-bold">{{ t('timing') }}</label>
+          <input name="timing" class="form-control kf-input" placeholder="كل 6 ساعات">
+        </div>
+      </div>
+
+      <div>
+        <label class="form-label small fw-bold">{{ t('side_effects') }}</label>
+        <textarea name="side_effects" rows="2" class="form-control kf-input" placeholder="الآثار الجانبية الموثقة…"></textarea>
+      </div>
+
+      <div>
+        <label class="form-label small fw-bold">{{ t('precautions') }}</label>
+        <textarea name="precautions" rows="2" class="form-control kf-input" placeholder="التحذيرات والاحتياطات…"></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-kf mt-2">
+        <i class="bi bi-check2"></i> {{ t('save') }}
+      </button>
+    </form>
+  </div>
+
+  <!-- Medicines List & Edit -->
+  <div class="col-xl-8">
+    <div class="panel">
+      <div class="panel-head">
+        <h3><i class="bi bi-capsule-pill text-primary"></i> {{ t('medicines') }} ({{ items|length }})</h3>
+        <input class="form-control kf-input search" data-table="#medTbl" placeholder="{{ t('search') }}">
+      </div>
+
+      {% if items %}
+      <div class="table-responsive">
+        <table class="table kf-table align-middle mb-0" id="medTbl">
+          <thead>
+            <tr>
+              <th>{{ t('medicine_name') }}</th>
+              <th>{{ t('category') }}</th>
+              <th>{{ t('dosage') }}</th>
+              <th>المصدر</th>
+              <th class="text-end-logical">{{ t('actions') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for m in items %}
+            <tr>
+              <td>
+                <div class="fw-semibold" dir="auto">{{ m.name }}</div>
+                {% if m.generic_name %}
+                  <small class="muted">{{ m.generic_name }}</small>
+                {% endif %}
+              </td>
+              <td class="small muted">{{ m.category or 'General' }}</td>
+              <td class="small muted">
+                {% if m.dosages %}
+                  {{ m.dosages[0].amount }} {{ m.dosages[0].timing }}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+              <td>
+                {% if m.source == 'verified_catalog' %}
+                  <span class="badge-kf ok"><i class="bi bi-shield-check"></i> موثق</span>
+                {% else %}
+                  <span class="badge-kf user"><i class="bi bi-camera"></i> من مسح</span>
+                {% endif %}
+              </td>
+              <td class="text-end-logical">
+                <button type="button" class="btn btn-sm btn-kf-soft" data-bs-toggle="modal" data-bs-target="#editMed{{ m.id }}">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <form method="post" action="{{ url_for('admin_medicine_delete', mid=m.id) }}" class="d-inline" data-confirm>
+                  <button type="submit" class="btn btn-sm btn-danger-soft">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+
+                <!-- Edit Medicine Modal -->
+                <div class="modal fade" id="editMed{{ m.id }}" tabindex="-1" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered text-start">
+                    <form method="post" action="{{ url_for('admin_medicine_edit', mid=m.id) }}" class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title fs-6 fw-bold">{{ t('edit_medicine') }}: {{ m.name }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body vstack gap-2">
+                        <div>
+                          <label class="form-label small fw-bold">{{ t('medicine_name') }}</label>
+                          <input name="name" class="form-control kf-input" value="{{ m.name }}" required>
+                        </div>
+                        <div>
+                          <label class="form-label small fw-bold">الاسم العلمي</label>
+                          <input name="generic_name" class="form-control kf-input" value="{{ m.generic_name or '' }}">
+                        </div>
+                        <div>
+                          <label class="form-label small fw-bold">{{ t('category') }}</label>
+                          <input name="category" class="form-control kf-input" value="{{ m.category or '' }}">
+                        </div>
+                        <div>
+                          <label class="form-label small fw-bold">{{ t('description') }}</label>
+                          <textarea name="description" rows="2" class="form-control kf-input">{{ m.description or '' }}</textarea>
+                        </div>
+                        <div class="row g-2">
+                          <div class="col-6">
+                            <label class="form-label small fw-bold">{{ t('amount') }}</label>
+                            <input name="amount" class="form-control kf-input" value="{{ m.dosages[0].amount if m.dosages else '' }}">
+                          </div>
+                          <div class="col-6">
+                            <label class="form-label small fw-bold">{{ t('timing') }}</label>
+                            <input name="timing" class="form-control kf-input" value="{{ m.dosages[0].timing if m.dosages else '' }}">
+                          </div>
+                        </div>
+                        <div>
+                          <label class="form-label small fw-bold">{{ t('side_effects') }}</label>
+                          <textarea name="side_effects" rows="2" class="form-control kf-input">{{ m.warnings[0].side_effects if m.warnings else '' }}</textarea>
+                        </div>
+                        <div>
+                          <label class="form-label small fw-bold">{{ t('precautions') }}</label>
+                          <textarea name="precautions" rows="2" class="form-control kf-input">{{ m.warnings[0].precautions if m.warnings else '' }}</textarea>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">{{ t('cancel') }}</button>
+                        <button type="submit" class="btn btn-sm btn-kf">{{ t('save') }}</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty">
+        <i class="bi bi-inbox"></i>
+        <p>{{ t('empty') }}</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

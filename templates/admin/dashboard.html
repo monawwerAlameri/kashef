@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block title %}{{ t('admin_panel') }}{% endblock %}
+{% block heading %}{{ t('admin_panel') }}{% endblock %}
+
+{% block content %}
+<div class="dash-grid">
+  <!-- Overview -->
+  <div class="panel overview">
+    <h3>{{ t('overview_title') }}</h3>
+    <div class="overview-grid">
+      <div class="mini-stat blue">
+        <span class="ms-ic"><i class="bi bi-receipt"></i></span>
+        <b>{{ scans_count }}</b><span>{{ t('total_scans') }}</span>
+      </div>
+      <div class="mini-stat mint">
+        <span class="ms-ic"><i class="bi bi-people"></i></span>
+        <b>{{ users_count }}</b><span>{{ t('total_users') }}</span>
+      </div>
+      <div class="mini-stat violet">
+        <span class="ms-ic"><i class="bi bi-lightning-charge"></i></span>
+        <b>{{ today_scans }}</b><span>{{ t('today_scans') }}</span>
+      </div>
+      <div class="mini-stat rose">
+        <span class="ms-ic"><i class="bi bi-cpu"></i></span>
+        <b style="font-size:1.05rem;line-height:1.7">{{ t('ocr_active') if ocr_status.available else t('ocr_demo') }}</b>
+        <span>{{ t('ocr_status') }}</span>
+      </div>
+    </div>
+  </div>
+
+  {% include '_dash_hero.html' %}
+</div>
+
+<!-- Quick links -->
+<div class="q-grid">
+  <a class="q-card violet" href="{{ url_for('admin_history') }}">
+    <span class="q-ic"><i class="bi bi-journal-medical"></i></span>
+    <span class="q-body">
+      <span class="q-title">{{ t('nav_all_history') }}</span>
+      <span class="q-num">{{ scans_count }}</span>
+      <span class="q-more">{{ t('view') }} <i class="bi bi-arrow-right"></i></span>
+    </span>
+  </a>
+  <a class="q-card peach" href="{{ url_for('admin_medicines') }}">
+    <span class="q-ic"><i class="bi bi-capsule"></i></span>
+    <span class="q-body">
+      <span class="q-title">{{ t('total_medicines') }}</span>
+      <span class="q-num">{{ meds_count }}</span>
+      <span class="q-more">{{ t('view') }} <i class="bi bi-arrow-right"></i></span>
+    </span>
+  </a>
+  <a class="q-card mint" href="{{ url_for('admin_users') }}">
+    <span class="q-ic"><i class="bi bi-people"></i></span>
+    <span class="q-body">
+      <span class="q-title">{{ t('nav_users') }}</span>
+      <span class="q-num">{{ users_count }}</span>
+      <span class="q-more">{{ t('view') }} <i class="bi bi-arrow-right"></i></span>
+    </span>
+  </a>
+  <a class="q-card blue" href="{{ url_for('admin_feedback') }}">
+    <span class="q-ic"><i class="bi bi-inboxes"></i></span>
+    <span class="q-body">
+      <span class="q-title">{{ t('nav_admin_feedback') }}</span>
+      <span class="q-num">{{ open_feedbacks }}</span>
+      <span class="q-more">{{ t('view') }} <i class="bi bi-arrow-right"></i></span>
+    </span>
+  </a>
+</div>
+
+<!-- Recent analyses + chart -->
+<div class="row g-3 mb-3">
+  <div class="col-xl-5 order-2 order-xl-1">
+    <div class="panel h-100">
+      <div class="panel-head">
+        <h3><i class="bi bi-graph-up"></i> {{ t('chart_title') }}</h3>
+        <span class="chip-range"><i class="bi bi-calendar3"></i> {{ t('last_7_days') }}</span>
+      </div>
+      <div class="line-chart" data-values="{{ chart_data|join(',') }}" data-labels="{{ chart_labels|join(',') }}" role="img" aria-label="{{ t('chart_title') }}"></div>
+    </div>
+  </div>
+  <div class="col-xl-7 order-1 order-xl-2">
+    <div class="panel h-100">
+      <div class="panel-head">
+        <h3><i class="bi bi-file-earmark-medical"></i> {{ t('recent_activity') }}</h3>
+        <a href="{{ url_for('admin_history') }}" class="panel-link">{{ t('view_all') }} <i class="bi bi-arrow-right"></i></a>
+      </div>
+      {% with items=recent_scans, show_user=True %}
+        {% include '_recent.html' %}
+      {% endwith %}
+    </div>
+  </div>
+
+</div>
+
+{% include '_how_safety.html' %}
+
+<!-- OCR diagnostics -->
+<div class="panel">
+  <div class="panel-head">
+    <h3><i class="bi bi-cpu-fill"></i> {{ t('ocr_status') }}</h3>
+    {% if ocr_status.available %}
+      <span class="badge-kf ok"><i class="bi bi-check-circle-fill"></i> {{ t('ocr_active') }}</span>
+    {% else %}
+      <span class="badge-kf warn"><i class="bi bi-exclamation-triangle-fill"></i> {{ t('ocr_demo') }}</span>
+    {% endif %}
+  </div>
+
+  <div class="row g-3 small">
+    <div class="col-md-6 col-xl-3">
+      <div class="text-muted">{{ t('ocr_engine') }}</div>
+      <strong>Tesseract OCR</strong>
+    </div>
+    <div class="col-md-6 col-xl-3">
+      <div class="text-muted">{{ t('ocr_path') }}</div>
+      <code class="d-block text-truncate" dir="ltr">{{ ocr_status.binary_path }}</code>
+    </div>
+    <div class="col-md-6 col-xl-3">
+      <div class="text-muted">{{ t('ocr_langs') }}</div>
+      <span>
+        {% if ocr_status.languages %}{{ ocr_status.languages|join(', ') }}{% else %}<span class="text-muted">{{ t('ocr_sample') }} (ara+eng)</span>{% endif %}
+      </span>
+    </div>
+    <div class="col-md-6 col-xl-3">
+      <div class="text-muted">{{ t('ocr_privacy') }}</div>
+      <strong style="color:#0b8a5f">{{ t('ocr_privacy_val') }}</strong>
+    </div>
+  </div>
+</div>
+{% endblock %}

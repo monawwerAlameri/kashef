@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block title %}{{ t('nav_admin_feedback') }}{% endblock %}
+{% block heading %}{{ t('nav_admin_feedback') }}{% endblock %}
+
+{% block content %}
+<div class="panel">
+  <div class="panel-head">
+    <h3><i class="bi bi-inboxes-fill text-primary"></i> {{ t('nav_admin_feedback') }} ({{ items|length }})</h3>
+  </div>
+
+  {% if items %}
+  <div class="table-responsive">
+    <table class="table kf-table align-middle mb-0">
+      <thead>
+        <tr>
+          <th>المرسل</th>
+          <th>{{ t('feedback_category') }}</th>
+          <th>الرسالة</th>
+          <th>{{ t('status') }}</th>
+          <th>التاريخ</th>
+          <th class="text-end-logical">تحديث الحالة</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for fb in items %}
+        <tr>
+          <td>
+            <div class="fw-semibold">{{ fb.name }}</div>
+            <small class="muted" dir="ltr">{{ fb.email }}</small>
+          </td>
+
+          <td>
+            {% if fb.category == 'ocr_issue' %}
+              <span class="badge-kf bad">{{ t('cat_ocr') }}</span>
+            {% elif fb.category == 'inaccurate_data' %}
+              <span class="badge-kf warn">{{ t('cat_data') }}</span>
+            {% elif fb.category == 'suggestion' %}
+              <span class="badge-kf ok">{{ t('cat_suggestion') }}</span>
+            {% else %}
+              <span class="badge-kf user">{{ t('cat_general') }}</span>
+            {% endif %}
+          </td>
+
+          <td style="max-width: 320px;">
+            <p class="small mb-0" dir="auto">{{ fb.message }}</p>
+            {% if fb.admin_notes %}
+              <small class="text-success d-block mt-1"><strong>ملاحظة الإدارة:</strong> {{ fb.admin_notes }}</small>
+            {% endif %}
+          </td>
+
+          <td>
+            {% if fb.status == 'new' %}
+              <span class="badge-kf bad">جديد</span>
+            {% elif fb.status == 'in_review' %}
+              <span class="badge-kf warn">قيد المعالجة</span>
+            {% else %}
+              <span class="badge-kf ok">تم الحل</span>
+            {% endif %}
+          </td>
+
+          <td class="muted small">{{ fb.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+
+          <td class="text-end-logical">
+            <button type="button" class="btn btn-sm btn-kf-soft" data-bs-toggle="modal" data-bs-target="#fbModal{{ fb.id }}">
+              <i class="bi bi-pencil-square"></i> معالجة
+            </button>
+
+            <!-- Feedback Resolution Modal -->
+            <div class="modal fade" id="fbModal{{ fb.id }}" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered text-start">
+                <form method="post" action="{{ url_for('admin_feedback_status', fid=fb.id) }}" class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title fs-6 fw-bold">معالجة بلاغ #{{ fb.id }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body vstack gap-2">
+                    <div>
+                      <label class="form-label small fw-bold">حالة التذكرة</label>
+                      <select name="status" class="form-select kf-input">
+                        <option value="new" {{ 'selected' if fb.status == 'new' }}>جديد</option>
+                        <option value="in_review" {{ 'selected' if fb.status == 'in_review' }}>قيد المراجعة</option>
+                        <option value="resolved" {{ 'selected' if fb.status == 'resolved' }}>تم الحل والمعالجة</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label class="form-label small fw-bold">ملاحظات الإدارة الداخلية</label>
+                      <textarea name="admin_notes" rows="3" class="form-control kf-input" placeholder="اكتب الإجراء المتخذ…">{{ fb.admin_notes or '' }}</textarea>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">{{ t('cancel') }}</button>
+                    <button type="submit" class="btn btn-sm btn-kf">{{ t('save') }}</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">
+    <i class="bi bi-inbox"></i>
+    <p class="mb-0">لا توجد بلاغات أو ملاحظات جديدة.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

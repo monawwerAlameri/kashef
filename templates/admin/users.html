@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block title %}{{ t('users') }}{% endblock %}
+{% block heading %}{{ t('users') }}{% endblock %}
+
+{% block content %}
+<div class="panel">
+  <div class="panel-head">
+    <h3><i class="bi bi-people-fill text-primary"></i> {{ t('users') }} ({{ items|length }})</h3>
+    
+    <div class="d-flex gap-2 flex-wrap">
+      <form method="get" class="d-flex gap-2">
+        <select name="role" class="form-select kf-input form-select-sm" onchange="this.form.submit()">
+          <option value="">جميع الأدوار</option>
+          <option value="user" {{ 'selected' if role_filter == 'user' }}>مريض / مستخدم</option>
+          <option value="pharmacist" {{ 'selected' if role_filter == 'pharmacist' }}>صيدلي مراجع</option>
+          <option value="admin" {{ 'selected' if role_filter == 'admin' }}>مدير نظام</option>
+        </select>
+        <input class="form-control kf-input search form-control-sm" name="q" value="{{ search_query or '' }}" placeholder="{{ t('search') }}">
+        {% if search_query or role_filter %}
+          <a href="{{ url_for('admin_users') }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center">
+            <i class="bi bi-x"></i>
+          </a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table kf-table align-middle mb-0">
+      <thead>
+        <tr>
+          <th>{{ t('name') }}</th>
+          <th>{{ t('email') }}</th>
+          <th>{{ t('role') }}</th>
+          <th>{{ t('status') }}</th>
+          <th>{{ t('joined') }}</th>
+          <th class="text-end-logical">{{ t('actions') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in items %}
+        <tr>
+          <td class="fw-semibold">{{ u.name }}</td>
+          <td class="muted small" dir="ltr">{{ u.email }}</td>
+          <td>
+            {% if u.role == 'admin' %}
+              <span class="badge-kf admin"><i class="bi bi-shield-lock-fill"></i> {{ t('role_admin') }}</span>
+            {% elif u.role == 'pharmacist' %}
+              <span class="badge-kf pharmacist"><i class="bi bi-patch-check-fill"></i> {{ t('role_pharmacist') }}</span>
+            {% else %}
+              <span class="badge-kf user"><i class="bi bi-person"></i> {{ t('role_user') }}</span>
+            {% endif %}
+          </td>
+          <td>
+            <span class="badge-kf {{ 'ok' if u.is_active_user else 'bad' }}">
+              {{ t('active') if u.is_active_user else t('blocked') }}
+            </span>
+          </td>
+          <td class="muted small">{{ u.created_at.strftime('%Y-%m-%d') }}</td>
+
+          <td class="text-end-logical">
+            {% if u.id != user.id %}
+              <!-- Role Modifier Form -->
+              <div class="dropdown d-inline-block">
+                <button class="btn btn-sm btn-kf-soft dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  تعديل الدور
+                </button>
+                <ul class="dropdown-menu shadow-sm border-0 py-1" style="font-size:0.82rem;">
+                  <li>
+                    <form method="post" action="{{ url_for('admin_user_change_role', uid=u.id) }}">
+                      <input type="hidden" name="role" value="user">
+                      <button class="dropdown-item py-1 {{ 'active fw-bold' if u.role == 'user' }}" type="submit">
+                        <i class="bi bi-person me-1"></i> {{ t('make_user') }}
+                      </button>
+                    </form>
+                  </li>
+                  <li>
+                    <form method="post" action="{{ url_for('admin_user_change_role', uid=u.id) }}">
+                      <input type="hidden" name="role" value="pharmacist">
+                      <button class="dropdown-item py-1 {{ 'active fw-bold' if u.role == 'pharmacist' }}" type="submit">
+                        <i class="bi bi-patch-check me-1"></i> {{ t('make_pharmacist') }}
+                      </button>
+                    </form>
+                  </li>
+                  <li>
+                    <form method="post" action="{{ url_for('admin_user_change_role', uid=u.id) }}">
+                      <input type="hidden" name="role" value="admin">
+                      <button class="dropdown-item py-1 {{ 'active fw-bold' if u.role == 'admin' }}" type="submit">
+                        <i class="bi bi-shield-lock me-1"></i> {{ t('make_admin') }}
+                      </button>
+                    </form>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Toggle Active / Blocked -->
+              <form method="post" action="{{ url_for('admin_user_toggle_active', uid=u.id) }}" class="d-inline">
+                <button class="btn btn-sm {{ 'btn-outline-warning' if u.is_active_user else 'btn-outline-success' }}" type="submit">
+                  {{ t('block') if u.is_active_user else t('unblock') }}
+                </button>
+              </form>
+
+              <!-- Delete User -->
+              <form method="post" action="{{ url_for('admin_user_delete', uid=u.id) }}" class="d-inline" data-confirm>
+                <button class="btn btn-sm btn-danger-soft" type="submit">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </form>
+            {% else %}
+              <span class="badge bg-light text-muted border small">حسابك الحالي</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

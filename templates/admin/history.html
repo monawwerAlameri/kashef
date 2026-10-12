@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}{{ t('nav_all_history') }}{% endblock %}
+{% block heading %}{{ t('nav_all_history') }}{% endblock %}
+
+{% block content %}
+<div class="panel">
+  <div class="panel-head">
+    <h3><i class="bi bi-journal-medical text-primary"></i> {{ t('nav_all_history') }} ({{ items|length }})</h3>
+    <form method="get" class="d-flex gap-2">
+      <input type="text" name="q" value="{{ search_query or '' }}" class="form-control kf-input search" placeholder="{{ t('search') }}">
+      {% if search_query %}
+        <a href="{{ url_for('admin_history') }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center">
+          <i class="bi bi-x"></i>
+        </a>
+      {% endif %}
+    </form>
+  </div>
+
+  {% with show_user=True %}
+    {% include '_recent.html' %}
+  {% endwith %}
+</div>
+{% endblock %}

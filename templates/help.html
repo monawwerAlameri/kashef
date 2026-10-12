@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% set force_public = true %}
+{% block title %}{{ t('nav_help') }}{% endblock %}
+
+{% block public %}
+<div class="mx-auto" style="max-width: 860px;">
+  <div class="panel">
+    <div class="panel-head">
+      <h3><i class="bi bi-lightbulb-fill text-warning"></i> {{ t('nav_help') }}</h3>
+      <a class="btn btn-kf-soft" href="{{ url_for('upload' if user else 'login') }}">
+        <i class="bi bi-camera-fill"></i> {{ t('start_scan') }}
+      </a>
+    </div>
+
+    <h4 class="mt-3 text-primary"><i class="bi bi-camera"></i> {{ t('tips') }}</h4>
+    <div class="row g-3 my-2">
+      <div class="col-md-6">
+        <div class="p-3 rounded-3 bg-light border h-100">
+          <div class="fw-bold text-success mb-1"><i class="bi bi-check-circle-fill"></i> 1. {{ t('tip1') }}</div>
+          <p class="small text-muted mb-0">تأكد من عدم وجود ظل أو انعكاس فلاش يحجب اسم الدواء أو تركيزه.</p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="p-3 rounded-3 bg-light border h-100">
+          <div class="fw-bold text-success mb-1"><i class="bi bi-check-circle-fill"></i> 2. {{ t('tip2') }}</div>
+          <p class="small text-muted mb-0">ضع العبوة على سطح مستوٍ والتقط زاوية أمامية مستقيمة بدون ميل حاد.</p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="p-3 rounded-3 bg-light border h-100">
+          <div class="fw-bold text-success mb-1"><i class="bi bi-check-circle-fill"></i> 3. {{ t('tip3') }}</div>
+          <p class="small text-muted mb-0">احرص على ظهور أرقام الجرعات (مثل 500mg أو 10ml) بشكل كامل دون اقتطاع.</p>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="p-3 rounded-3 bg-light border h-100">
+          <div class="fw-bold text-success mb-1"><i class="bi bi-check-circle-fill"></i> 4. {{ t('tip4') }}</div>
+          <p class="small text-muted mb-0">يتعرف المحرك على العربية والإنجليزية في صورة واحدة تلقائياً.</p>
+        </div>
+      </div>
+    </div>
+
+    <h4 class="mt-4 text-primary"><i class="bi bi-question-circle"></i> الأسئلة الشائعة (FAQ)</h4>
+    <div class="accordion accordion-flush mt-2 border rounded-3" id="faqAccordion">
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+            ماذا أفعل إذا ظهرت رسالة "لم يتم العثور على نص"؟
+          </button>
+        </h2>
+        <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body small text-muted">
+            قد تكون الصورة ضبابية أو مظلمة أو غير متطابقة. يرجى التقاط صورة أقرب للعبوة مع مسافة مناسبة والتركيز على النص المطبوع. يمكنك أيضاً تعديل النص يدوياً في صفحة المراجعة.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+            هل يقوم «كاشف» بوصف الدواء أو تغيير جرعتي؟
+          </button>
+        </h2>
+        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body small text-muted">
+            <strong>كلا على الإطلاق.</strong> نظام «كاشف» هو أداة ذكية لمساعدة القراءة وفهم التعليمات المطبوعة على العبوة وتصنيفها للمريض، ولا يحل محل الطبيب أو الصيدلي أبداً.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+            هل تُحفظ صور أدويتي في النظام؟
+          </button>
+        </h2>
+        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+          <div class="accordion-body small text-muted">
+            حفاظاً على خصوصيتك وأمان بياناتك الطبية، يتم حذف الصورة فور الانتهاء من استخراج النص منها بواسطة OCR، ويتم حفظ النص والملخص فقط في سجلك الخاص.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4 p-3 bg-light rounded-3 text-center">
+      <span class="small text-muted">هل تواجه مشكلة لم تجد حلها هنا؟</span>
+      <a href="{{ url_for('feedback') }}" class="btn btn-sm btn-kf ms-2">{{ t('feedback_title') }}</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

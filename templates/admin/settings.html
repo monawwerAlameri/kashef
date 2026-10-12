@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}{{ t('nav_settings') }}{% endblock %}
+{% block heading %}{{ t('nav_settings') }}{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+  <!-- System Settings Form -->
+  <div class="col-lg-7">
+    <form method="post" class="panel">
+      <div class="panel-head">
+        <h3><i class="bi bi-sliders2 text-primary"></i> {{ t('nav_settings') }}</h3>
+      </div>
+
+      <div class="vstack gap-3">
+        <div>
+          <label class="form-label small fw-bold">الحد الأقصى لحجم صورة العبوة (ميجابايت)</label>
+          <input type="number" name="max_upload_size_mb" class="form-control kf-input" value="{{ settings.get('max_upload_size_mb', '10') }}" min="2" max="30" required>
+          <small class="text-muted">الافتراضي 10 ميجابايت لمنع إرهاق الخادم وتحسين زمن المعالجة.</small>
+        </div>
+
+        <div>
+          <label class="form-label small fw-bold">تفعيل وضع العينات التجريبية التوضيحية عند غياب OCR</label>
+          <select name="allow_demo_fallback" class="form-select kf-input">
+            <option value="true" {{ 'selected' if settings.get('allow_demo_fallback', 'true') == 'true' }}>مفعل (يسمح بتجربة نماذج الأدوية الجاهزة)</option>
+            <option value="false" {{ 'selected' if settings.get('allow_demo_fallback') == 'false' }}>معطل (فقط OCR الحقيقي)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="form-label small fw-bold">السماح لغير المسجلين بالفحص التجريبي المؤقت</label>
+          <select name="allow_guest_scan" class="form-select kf-input">
+            <option value="false" {{ 'selected' if settings.get('allow_guest_scan', 'false') == 'false' }}>معطل (يتطلب إنشاء حساب لحفظ السجل والخصوصية)</option>
+            <option value="true" {{ 'selected' if settings.get('allow_guest_scan') == 'true' }}>مفعل</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-kf mt-2">
+          <i class="bi bi-check2-circle me-1"></i> {{ t('save') }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- OCR Engine Diagnostic Panel -->
+  <div class="col-lg-5">
+    <div class="panel">
+      <div class="panel-head">
+        <h3><i class="bi bi-cpu-fill text-primary"></i> تشخيص محرك OCR</h3>
+        {% if ocr_diag.available %}
+          <span class="badge-kf ok"><i class="bi bi-check-circle-fill"></i> متاح</span>
+        {% else %}
+          <span class="badge-kf warn"><i class="bi bi-exclamation-triangle-fill"></i> غير مثبت</span>
+        {% endif %}
+      </div>
+
+      <div class="small lh-lg">
+        <div class="p-2 bg-light rounded mb-2">
+          <strong>حالة Tesseract:</strong>
+          <span class="{{ 'text-success' if ocr_diag.available else 'text-danger' }}">
+            {{ 'تم العثور على المحرك' if ocr_diag.available else 'غير موجود على المسار الافتراضي' }}
+          </span>
+        </div>
+
+        <p class="text-muted mb-2">
+          لتثبيت Tesseract على نظام Windows مع دعم اللغتين العربية والإنجليزية:
+        </p>
+        <ol class="ps-3 text-secondary mb-3">
+          <li>قم بتحميل متبث Tesseract الرسمي من UB-Mannheim.</li>
+          <li>أثناء التثبيت، اختر حزم اللغات الإضافية: <code>Arabic (ara)</code> و <code>English (eng)</code>.</li>
+          <li>المسار الافتراضي التلقائي في النظام: <code>C:\Program Files\Tesseract-OCR\tesseract.exe</code>.</li>
+        </ol>
+
+        <div class="alert alert-success py-2 px-3 small mb-0">
+          <i class="bi bi-shield-check"></i> خصوصية الصور R5 نشطة: تُحذف جميع الصور المرفوعة تلقائياً فور استخراج النص.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

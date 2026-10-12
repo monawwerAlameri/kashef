@@ -1,0 +1,71 @@
+{% if items %}
+<div class="table-responsive">
+  <table class="table kf-table align-middle mb-0">
+    <thead>
+      <tr>
+        {% if show_user %}
+          <th>{{ t('role_user') }}</th>
+        {% endif %}
+        <th>{{ t('medicine_name') }}</th>
+        <th>{{ t('analysis_status') }}</th>
+        <th>{{ t('date') }}</th>
+        <th class="text-end-logical">{{ t('actions') }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for h in items %}
+      <tr>
+        {% if show_user %}
+          <td>
+            <div class="fw-bold">{{ h.user.name }}</div>
+            <small class="muted" dir="ltr">{{ h.user.email }}</small>
+          </td>
+        {% endif %}
+
+        <td>
+          <div class="fw-semibold" dir="auto">
+            {{ (h.result.name if h.result else None) or (h.medicine.name if h.medicine else '—') }}
+          </div>
+          {% if h.result and (h.result.active_ingredient or h.result.strength) %}
+            <small class="muted">{{ h.result.active_ingredient }} {{ h.result.strength }}</small>
+          {% endif %}
+        </td>
+
+        <td>
+          {% if h.status == 'pharmacist_verified' %}
+            <span class="badge-kf ok"><i class="bi bi-patch-check-fill"></i> {{ t('st_verified') }}</span>
+          {% elif h.status == 'needs_review' %}
+            <span class="badge-kf warn"><i class="bi bi-hourglass-split"></i> {{ t('st_review') }}</span>
+          {% else %}
+            <span class="badge-kf done"><i class="bi bi-check-circle"></i> {{ t('st_done') }}</span>
+          {% endif %}
+        </td>
+
+        <td class="muted small">
+          {{ h.created_at.strftime('%Y-%m-%d %H:%M') }}
+        </td>
+
+        <td class="text-end-logical">
+          <a class="icon-act" href="{{ url_for('result' if h.result else 'extracted', hid=h.id) }}" title="{{ t('view') }}" aria-label="{{ t('view') }}">
+            <i class="bi bi-eye"></i>
+          </a>
+          <form method="post" action="{{ url_for('history_delete', hid=h.id) }}" class="d-inline" data-confirm>
+            <button class="icon-act danger" type="submit" title="{{ t('delete') }}" aria-label="{{ t('delete') }}">
+              <i class="bi bi-trash"></i>
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty">
+  <i class="bi bi-inbox"></i>
+  <p class="mb-2">{{ t('no_history') }}</p>
+  <a href="{{ url_for('upload') }}" class="btn btn-sm btn-kf">
+    <i class="bi bi-camera"></i> {{ t('scan_now') }}
+  </a>
+</div>
+{% endif %}

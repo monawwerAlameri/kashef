@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %}{{ t('pharma_title') }}{% endblock %}
+{% block heading %}{{ t('pharma_title') }}{% endblock %}
+
+{% block content %}
+<div class="panel">
+  <div class="panel-head">
+    <div>
+      <h3><i class="bi bi-clipboard2-pulse-fill text-cyan-600"></i> {{ t('pharma_title') }}</h3>
+      <p class="muted small mb-0">{{ t('pharma_sub') }}</p>
+    </div>
+    
+    <div class="d-flex gap-2">
+      <a href="{{ url_for('pharmacist_reviews', status='all') }}" class="btn btn-sm {{ 'btn-kf' if active_filter == 'all' else 'btn-outline-secondary' }}">الكل</a>
+      <a href="{{ url_for('pharmacist_reviews', status='pending') }}" class="btn btn-sm {{ 'btn-kf' if active_filter == 'pending' else 'btn-outline-secondary' }}">
+        {{ t('pending_reviews') }}
+      </a>
+      <a href="{{ url_for('pharmacist_reviews', status='verified') }}" class="btn btn-sm {{ 'btn-kf' if active_filter == 'verified' else 'btn-outline-secondary' }}">
+        {{ t('reviewed_items') }}
+      </a>
+    </div>
+  </div>
+
+  {% if items %}
+  <div class="table-responsive">
+    <table class="table kf-table align-middle mb-0">
+      <thead>
+        <tr>
+          <th>المريض / المستخدم</th>
+          <th>الدواء المكتشف</th>
+          <th>الحالة الحالية</th>
+          <th>تاريخ الفحص</th>
+          <th class="text-end-logical">المراجعة والاعتماد</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for h in items %}
+        <tr>
+          <td>
+            <div class="fw-bold">{{ h.user.name }}</div>
+            <small class="muted" dir="ltr">{{ h.user.email }}</small>
+          </td>
+
+          <td>
+            <div class="fw-semibold" dir="auto">{{ (h.result.name if h.result else None) or '—' }}</div>
+            <small class="muted">{{ h.result.dosage_amount or '' }} {{ h.result.timing or '' }}</small>
+          </td>
+
+          <td>
+            {% if h.status == 'pharmacist_verified' %}
+              <span class="badge-kf ok"><i class="bi bi-patch-check-fill"></i> موثق سريرياً</span>
+            {% elif h.status == 'needs_review' %}
+              <span class="badge-kf warn"><i class="bi bi-hourglass-split"></i> مطلوب مراجعة</span>
+            {% else %}
+              <span class="badge-kf user"><i class="bi bi-check"></i> عادي</span>
+            {% endif %}
+          </td>
+
+          <td class="muted small">
+            {{ h.created_at.strftime('%Y-%m-%d %H:%M') }}
+          </td>
+
+          <td class="text-end-logical">
+            <button type="button" class="btn btn-sm btn-kf-soft" data-bs-toggle="modal" data-bs-target="#reviewModal{{ h.id }}">
+              <i class="bi bi-pencil-square"></i> مراجعة سريرية
+            </button>
+            <a href="{{ url_for('result', hid=h.id) }}" class="btn btn-sm btn-outline-secondary" target="_blank">
+              <i class="bi bi-box-arrow-up-right"></i>
+            </a>
+
+            <!-- Review Modal for Pharmacist -->
+            <div class="modal fade" id="reviewModal{{ h.id }}" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <form method="post" action="{{ url_for('pharmacist_submit_review', hid=h.id) }}" class="modal-content text-start">
+                  <div class="modal-header">
+                    <h5 class="modal-title fs-6 fw-bold">
+                      <i class="bi bi-patch-check-fill text-primary"></i> مراجعة سريرية: {{ (h.result.name if h.result else None) or 'الدواء' }}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="mb-3">
+                      <label class="form-label small fw-bold">حالة الاعتماد السريري</label>
+                      <select name="status" class="form-select kf-input">
+                        <option value="pharmacist_verified" {{ 'selected' if h.status == 'pharmacist_verified' }}>موثق ومطابق (معتمد من الصيدلي)</option>
+                        <option value="needs_review" {{ 'selected' if h.status == 'needs_review' }}>يحتاج مراجعة الطبيب / تحذير</option>
+                      </select>
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label small fw-bold">{{ t('pharma_notes') }}</label>
+                      <textarea name="notes" rows="4" class="form-control kf-input" placeholder="{{ t('pharma_notes_placeholder') }}">{{ h.pharmacist_notes or '' }}</textarea>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">{{ t('cancel') }}</button>
+                    <button type="submit" class="btn btn-sm btn-kf">{{ t('save_review') }}</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">
+    <i class="bi bi-clipboard2-check"></i>
+    <p class="mb-0">لا توجد عناصر بانتظار المراجعة السريرية حالياً.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
